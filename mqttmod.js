@@ -29,6 +29,5 @@ var  mqttmod = {
 		})
 	return data;
 	}
- 
 }
 module.exports = mqttmod;
