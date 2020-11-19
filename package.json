@@ -1,0 +1,22 @@
+{
+  "name": "mqttEmitter",
+  "version": "1.0.0",
+  "description": "Send data from a sqlite database to an mqtt topic",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aknts/mqttEmitter.git"
+  },
+  "author": "Alexander Kontogiannis",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aknts/mqttEmitter/issues"
+  },
+  "homepage": "https://github.com/aknts/mqttEmitter#readme",
+  "dependencies": {
+	"mqttmod": "aknts/mqttmod"
+  }
+}
