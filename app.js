@@ -1,113 +1,104 @@
-// [Settings]
-//retrieve the configuration settings
-var config = require('./config.js');
+process.title = 'dasfest_measurements_emitter';
+// Initialization 
+// Config
+const config = JSON.parse(Buffer.from(require('./config.js'), 'base64').toString());
 
-// [Libraries]
+// Settings
+var broker = config.globalsettings.broker;
+var logtopic = config.globalsettings.logtopic;
+var listentopic = config.mynodeid;
+var nextnode = config.nextnode;
+var dbfile = config.appsettings.dbfile;
+var rate_transmit = config.appsettings.rate_transmit;
+var rate_sampling = config.appsettings.rate_sampling;
+
+// Modules
 const sqlite3 = require('sqlite3').verbose();
-var mqttmod = require('./mqttmod.js')
+const mqttmod = require('mqttmod');
+const dbclass = require('./sqlite');
+const l = require('mqttlogger')(broker, logtopic, mqttmod);
 
-// [Global variables]
-var query;
-var db;
-if (config.loop == 1) {
-	var cacheArray = new Array();
-}
+// Variables
+l.info("Connecting to database "+dbfile);
+var db = dbclass.connectDB(sqlite3,dbfile);
+var minTimestamp;
+var clients = [];
 
-// [Queries]
-switch (config.qsw) {
-	case 1:
-		query = "SELECT * FROM Scans WHERE rowid IN (SELECT rowid FROM Scans ORDER BY RANDOM() LIMIT "+config.sample+")";
-	break;
-	case 2:
-		query = "SELECT * FROM Scans ORDER BY RANDOM() LIMIT "+config.sample+"";
-	break;
-}
-
-// [Functions]
-function connectDB (callback, nextstep) {
-	db = new sqlite3.Database(config.sqliteDB, (err) => {
+// Functions
+function getPreliminaryData () {
+	db.get('select min(TimestampSecs) as minTimestamp from Scans', function(err, row){
 		if (err) {
-			console.error(err.message);
+			l.error(err.message);
 		}
-		switch (config.log) {
-			case 1:
-			console.log('Connected to the database.');
-			break;
-		}
-	});
-	callback(nextstep);
-};
-
-function closeDB () {
-		db.close((err) => {
-		if (err) {
-			return console.error(err.message);
-		}
-		switch (config.log) {
-		case 1:
-			console.log('Close the database connection.');
-		break;
-		}
+		minTimestamp = row.minTimestamp;
+		l.info('minTimestamp: '+minTimestamp);
+		startReceiving();
 	});
 }
 
-function getData (callback) {
-	db.serialize(() => {
-		if (callback != null) {
-			db.all(query, (err, array) => {
-				if (err) {
-					console.error(err.message);
-				}
-				if (array.length == config.sample) {
-					callback(array);
-				}
-			});
-		};
-		if (config.loop == 1) {
-			db.all(query, (err, array) => {
-				if (err) {
-					console.error(err.message);
-				}
-				if (array.length == config.sample) {
-					cacheArray = array;
-				}
-			});
-		};
-		closeDB();
-	});
-};
+function startReceiving () {
+	l.info('Now receiving messages on '+listentopic+' mqtt topic.');
+	mqttmod.receive(broker,listentopic,filterRequests);	
+}
 
-function printArray (data) {
-		
-		var i = 0;
-		var ii = 0;
-		
-		if (config.msgr >= 100) {
-			ii = config.msgr;
+function filterRequests(payload){
+	try {
+		data = JSON.parse(payload);
+    } catch (e) {
+        l.error('Received not valid JSON.\r\n'+payload);
+		return false;
+    }
+	if (data.request == 'send') {
+		var requestingNode = data.node;
+		l.info('Received send request from '+requestingNode);
+		if (requestingNode != nextnode) {
+			l.error('Requesting node ('+requestingNode+') is not the next node ('+nextnode+') configured in node red.');
 		} else {
-			ii = 100;
+			checkNode = clients.find(function (clients) { 
+				return clients.node === requestingNode;
+			});
+			if (!checkNode) {
+				clients.push({"node":requestingNode})
+				l.info('Check node:' +checkNode);
+				l.info('Accepted send request from '+requestingNode);
+				getData(requestingNode);				
+			} else {
+				l.info('Node '+requestingNode+' has already requested data.');
+			}
 		}
-		data.forEach(function (item, index) {
-			setTimeout(function () {
-				sendMessage(index,item);
-			}, i);
-			i=i+ii;
-		});
-};
-
-function sendMessage (counter, item) {
-	mqttmod.send(config.mqttBroker,config.mqttTopic,JSON.stringify(item));
-	if (counter == config.sample-1) {
-		if ((config.loop == 1) && (cacheArray.length == config.sample)) {
-			console.log('Incoming more data');
-			console.log('cacheArray is '+cacheArray.length+' rows!');
-			printArray(cacheArray);
-			connectDB(getData); 
-		} else {
-			console.log('No config.loop detected. Exiting, nothing to stream!');
-		}
+	} else {
+		l.error('Not a valid command.');
 	}
 }
 
-// [Execution]
-connectDB(getData, printArray);
+function getData (requestingNode) {
+	var from = minTimestamp;
+	db.serialize(() => {
+		db.run("begin transaction");
+		setInterval(function(){
+		var to = (+from + +rate_sampling);
+		l.info('Find data between '+from+' and '+to+'.');
+		var preparedQuery = db.prepare("select RPi as did,TimestampSecs as timestamp,MACAddress as uid,Signal as RSSI from Scans where TimestampSecs >= ? and TimestampSecs < ?");
+		preparedQuery.all(from,to,(err, array) => {
+			if (err) {
+				l.error(err.message);
+			}
+			if (array.length > 0) {
+				l.info('Found '+array.length+' results.');
+				sendData(array);
+			} else {
+				l.info('No results between '+from+' and '+to+'.');
+			}
+			from = to;
+		});
+		preparedQuery.finalize();
+		},rate_transmit);
+	});
+}
+
+function sendData (results) {
+	l.info('Sending data, array of '+JSON.stringify(results.length)+' results.');
+	mqttmod.send(broker,nextnode,JSON.stringify(results));
+}
+
+getPreliminaryData();

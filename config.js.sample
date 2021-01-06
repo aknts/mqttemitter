@@ -1,0 +1,20 @@
+/*
+Μain config object that should be delivered through node-red
+{
+	listening_port: 8110,
+	rate_transmit: 2000,	//send data to client every rate_transmit millisecs
+	rate_sampling: 60,	//get data from db worth of rate_sampling secs
+}
+{"listening_port":"8110","rate_transmit":"2000","rate_sampling":"60"}
+{"globalsettings":{"broker":"mqtt://192.168.2.240:1883","logtopic":"global/logz"},"nextnode":"b3e5aac371d7f9","mynodeid":"b3e5aac371d7f8","appname":"mqttEmitter","appsettings":{"dbfile":"DASFEST2018.db","rate_transmit":"10000","rate_sampling":"1"}}
+eyJnbG9iYWxzZXR0aW5ncyI6eyJicm9rZXIiOiJtcXR0Oi8vMTkyLjE2OC4yLjI0MDoxODgzIiwibG9ndG9waWMiOiJnbG9iYWwvbG9neiJ9LCJuZXh0bm9kZSI6ImIzZTVhYWMzNzFkN2Y5IiwibXlub2RlaWQiOiJiM2U1YWFjMzcxZDdmOCIsImFwcG5hbWUiOiJtcXR0RW1pdHRlciIsImFwcHNldHRpbmdzIjp7ImRiZmlsZSI6IkRBU0ZFU1QyMDE4LmRiIiwicmF0ZV90cmFuc21pdCI6IjIwMDAiLCJyYXRlX3NhbXBsaW5nIjoiMSJ9fQ==
+{"globalsettings":{"broker":"mqtt://192.168.2.240:1883","logtopic":"global/logz"},"nextnode":"b3e5aac371d7f9","mynodeid":"b3e5aac371d7f8","appname":"mqttEmitter","appsettings":{"dbfile":"DASFEST2018.db","rate_transmit":"3000","rate_sampling":"1000"}}
+{"globalsettings":{"broker":"mqtt://192.168.2.240:1883","logtopic":"global/logz"},"nextnode":"b3e5aac371d7f9","mynodeid":"b3e5aac371d7f8","appname":"mqttEmitter","appsettings":{"dbfile":"DASFEST2018.db","rate_transmit":"3000","rate_sampling":"1000"}}
+{"globalsettings":{"broker":"mqtt://192.168.2.240:1883","logtopic":"global/logz"},"nextnode":"b3e5aac371d7f9","mynodeid":"b3e5aac371d7f8","appname":"mqttEmitter","appsettings":{"dbfile":"DASFEST2018.db","rate_transmit":"3000","rate_sampling":"100"}}
+{"globalsettings":{"broker":"mqtt://192.168.2.240:1883","logtopic":"global/logz"},"nextnode":"b3e5aac371d7f9","mynodeid":"b3e5aac371d7f8","appname":"mqttEmitter","appsettings":{"dbfile":"DASFEST2018.db","rate_transmit":"5000","rate_sampling":"100"}}
+{"globalsettings":{"broker":"mqtt://192.168.2.240:1883","logtopic":"global/logz"},"nextnode":"b3e5aac371d7f9","mynodeid":"b3e5aac371d7f8","appname":"mqttEmitter","appsettings":{"dbfile":"DASFEST2018.db","rate_transmit":"1000","rate_sampling":"1000"}}
+{"globalsettings":{"broker":"mqtt://192.168.2.240:1883","logtopic":"global/logz"},"nextnode":"b3e5aac371d7f9","mynodeid":"b3e5aac371d7f8","appname":"mqttEmitter","appsettings":{"dbfile":"DASFEST2018.db","rate_transmit":"1000","rate_sampling":"1000","buffersize":"10"}}
+{"globalsettings":{"broker":"mqtt://192.168.2.240:1883","logtopic":"global/logz"},"nextnode":"b3e5aac371d7f9","mynodeid":"b3e5aac371d7f8","appname":"mqttEmitter","appsettings":{"dbfile":"DASFEST2018.db","rate_transmit":"1000","rate_sampling":"60","buffersize":"10"}}
+*/
+var config = 'eyJnbG9iYWxzZXR0aW5ncyI6eyJicm9rZXIiOiJtcXR0Oi8vMTkyLjE2OC4yLjI0MDoxODgzIiwibG9ndG9waWMiOiJnbG9iYWwvbG9neiJ9LCJuZXh0bm9kZSI6ImIzZTVhYWMzNzFkN2Y5IiwibXlub2RlaWQiOiJiM2U1YWFjMzcxZDdmOCIsImFwcG5hbWUiOiJtcXR0RW1pdHRlciIsImFwcHNldHRpbmdzIjp7ImRiZmlsZSI6IkRBU0ZFU1QyMDE4LmRiIiwicmF0ZV90cmFuc21pdCI6IjEwMDAiLCJyYXRlX3NhbXBsaW5nIjoiMTAwMCJ9fQ==';
+module.exports = config;
