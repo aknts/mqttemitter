@@ -1,0 +1,24 @@
+{
+  "name": "mqttemitter",
+  "version": "1.0.0",
+  "description": "Receive requests from an MQTT topic and send data from a sqlite database",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aknts/mqttemitter.git"
+  },
+  "author": "aknts",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aknts/mqttemitter/issues"
+  },
+  "homepage": "https://github.com/aknts/mqtttestapp#readme",
+  "dependencies": {
+    "mqttlogger": "aknts/mqttlogger",
+    "mqttmod": "aknts/mqttmod",
+    "sqlite3": "^ 4.0.0"
+  }
+}
