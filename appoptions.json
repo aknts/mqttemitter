@@ -1,5 +1,6 @@
 {
     "dbfile": "/mnt/DASFEST2018.db",
     "rate_transmit": "1000",
-    "rate_sampling": "1000"
+    "rate_sampling": "1000",
+    "logmode": "1"
 }
