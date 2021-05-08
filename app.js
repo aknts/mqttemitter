@@ -5,13 +5,13 @@ const config = JSON.parse(Buffer.from(require('./config.js'), 'base64').toString
 
 // Settings
 var broker = config.globalsettings.broker;
-var logtopic = config.mynodeid+'/log';
-var controltopic = config.mynodeid+'/control';
-var datatopic = config.mynodeid+'/data';
+var mynodeid = config.mynodeid;
+var logtopic = mynodeid+'/log';
+var controltopic = mynodeid+'/control';
+var datatopic = mynodeid+'/data';
 var nextnode = config.nextnode;
 var nextnodedatatopic = config.nextnode+'/data';
-var pipelinetopic = config.globalsettings.nameid+'/broadcast'
-var mynodeid = config.mynodeid;
+var pipelinetopic = config.mynodeid+'/broadcast'
 var appname = config.appname;
 var dbfile = config.appsettings.dbfile;
 var rate_transmit = config.appsettings.rate_transmit;
