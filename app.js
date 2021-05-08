@@ -249,7 +249,7 @@ process.on('SIGTERM', function onSigterm () {
 	l.info('Got SIGTERM');
 	mqttmod.send(broker,pipelinetopic,terminatingresponse);
 });
-
+/*
 process.on('SIGINT', function onSigterm () {
 	l.info('Got SIGINT');
 	mqttmod.send(broker,pipelinetopic,terminatingresponse);
@@ -263,4 +263,4 @@ process.on('SIGKILL', function onSigterm () {
 process.on('SIGHUP', function onSigterm () {
 	l.info('Got SIGHUP');
 	mqttmod.send(broker,pipelinetopic,terminatingresponse);
-});
+});*/
