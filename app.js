@@ -24,9 +24,9 @@ const dbclass = require('./sqlite');
 const l = require('mqttlogger')(broker, logtopic, mqttmod, logmode);
 
 // Variables
-var readyresponse = '{"node":"'+mynodeid+'","name":"'+process.title+'","request":"ready"}';
-var cleanheapresponse = '{"node":"'+mynodeid+'","name":"'+process.title+'","request":"cleanheap"}';
-var terminatingresponse = '{"node":"'+mynodeid+'","name":"'+process.title+'","request":"terminating"}';
+var readyresponse = '{"node":"'+mynodeid+'","name":"emitter","request":"ready"}';
+var cleanheapresponse = '{"node":"'+mynodeid+'","name":"emitter","request":"cleanheap"}';
+var terminatingresponse = '{"node":"'+mynodeid+'","name":"emitter","request":"terminating"}';
 l.info("Connecting to database "+dbfile);
 var db = dbclass.connectDB(sqlite3,dbfile);
 var minTimestamp;
