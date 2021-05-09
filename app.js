@@ -241,7 +241,7 @@ function heapCheck () {
 	}
 }
 
-livemodules.push({"node":mynodeid,"name":process.title});
+livemodules.push({"node":mynodeid,"name":"emitter"});
 getPreliminaryData();
 mqttmod.send(broker,pipelinetopic,readyresponse);
 
