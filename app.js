@@ -215,6 +215,7 @@ function getDataNew (callback) {
 					from = to;
 					queryinprogress = 0;
 				});
+				preparedQuery = null;
 			} else {
 				l.info('Last query hasn\'t finished, looping through');
 			}
@@ -237,6 +238,7 @@ function heapCheck () {
 		if (key == 'external') {
 			usage=usage.slice(0, -2);
 			l.info('Heap usage: '+usage);
+			usage = null;	
 		}
 	}
 }
