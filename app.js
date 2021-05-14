@@ -208,7 +208,7 @@ function getDataNew (callback) {
 					if (array.length > 0) {
 						l.info('Found '+array.length+' results.');
 						callback(array);
-						array = [];
+						array = null;
 					} else {
 						l.info('No results between '+from+' and '+to+'.');
 					}
@@ -226,7 +226,7 @@ function getDataNew (callback) {
 function sendData (results) {
 	l.info('Sending data, array of '+JSON.stringify(results.length)+' results.');
 	mqttmod.send(broker,nextnodedatatopic,JSON.stringify(results));
-	results = [];
+	results = null;
 }
 
 function heapCheck () {
