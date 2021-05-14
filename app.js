@@ -237,8 +237,7 @@ function heapCheck () {
 		usage = usage.concat(`${key} ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB, `);
 		if (key == 'external') {
 			usage=usage.slice(0, -2);
-			l.info('Heap usage: '+usage);
-			usage = null;	
+			l.info('Heap usage: '+usage);	
 		}
 	}
 }
