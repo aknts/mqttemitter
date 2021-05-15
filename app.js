@@ -41,11 +41,7 @@ var livemodules = [];
 var mqtt = require('mqtt');
 
 // Events
-eventEmitter.on('start', startHandler);
-eventEmitter.on('stop', stopHandler);
-
-
-// Functions
+// Handlers
 var startHandler = function () {
 	getDataNew(sendData);
 }
@@ -54,7 +50,12 @@ var stopHandler = function () {
 	getDataNew(sendData);
 }
 
+// Emitters
+eventEmitter.on('start', startHandler);
+eventEmitter.on('stop', stopHandler);
 
+
+// Functions
 function getPreliminaryData () {
 	db.get('select min(TimestampSecs) as minTimestamp from Scans', function(err, row){
 		if (err) {
