@@ -21,6 +21,8 @@ var logmode = config.appsettings.logmode;
 const sqlite3 = require('sqlite3').verbose();
 const mqttmod = require('mqttmod');
 const dbclass = require('./sqlite');
+var events = require('events');
+var eventEmitter = new events.EventEmitter();
 const l = require('mqttlogger')(broker, logtopic, mqttmod, logmode);
 
 // Variables
@@ -38,7 +40,21 @@ var appmodules = ['emitter','filter','loadbalancer','trilaterator','aggregator']
 var livemodules = [];
 var mqtt = require('mqtt');
 
+// Events
+eventEmitter.on('start', startHandler);
+eventEmitter.on('stop', stopHandler);
+
+
 // Functions
+var startHandler = function () {
+	getDataNew(sendData);
+}
+
+var stopHandler = function () {
+	getDataNew(sendData);
+}
+
+
 function getPreliminaryData () {
 	db.get('select min(TimestampSecs) as minTimestamp from Scans', function(err, row){
 		if (err) {
@@ -127,6 +143,7 @@ function filterRequests(payload){
 			case 'execute':
 				if (init == 0 && halt == 0) {
 					getDataNew(sendData);
+
 					init = 1;
 					//l.info('Starting application');
 				} else if (init == 1 && halt == 2) {
@@ -191,8 +208,8 @@ function getData () {
 
 function getDataNew (callback) {	
 	var queryinprogress = 0;
-	var client  = mqtt.connect(broker);
-	client.on('connect', function () {
+	//var client  = mqtt.connect(broker);
+	//client.on('connect', function () {
 	var retrieveData = setInterval(function(){
 		heapCheck();
 		if (halt == 0) {
@@ -223,7 +240,7 @@ function getDataNew (callback) {
 			}
 		} 		
 	},rate_transmit);
-	});
+	//});
 }
 
 function sendData (results) {
