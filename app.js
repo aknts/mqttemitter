@@ -47,7 +47,7 @@ var startHandler = function () {
 }
 
 var stopHandler = function () {
-	console.log("Stoping interval")
+	console.log("Stoping interval");
 	clearInterval(retrieveData);
 	dbclass.closeDB();
 	db = null;
