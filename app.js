@@ -52,12 +52,14 @@ var stopHandler = function () {
 	//console.log(db);
 	db = dbclass.closeDB();
 	var checkDb = setInterval(function() {
-		if (db.close == 'true') {
-			db = dbclass.connectDB(sqlite3,dbfile);
-		}
-		if (db.open == 'true') {
-			eventEmitter.emit('start');
-			clearInterval(checkDb);
+		if (db) {
+			if (db.close == 'true') {
+				db = dbclass.connectDB(sqlite3,dbfile);
+			}
+			if (db.open == 'true') {
+				eventEmitter.emit('start');
+				clearInterval(checkDb);
+			}
 		}
 	},500);
 }
