@@ -78,6 +78,8 @@ function startReceiving () {
 	// Start recieving control MQTT messages
 	//l.info('Started receiving control messages on '+pipelinetopic);
 	mqttmod.receive(broker,pipelinetopic,filterRequests);
+
+	mqttmod.send(broker,pipelinetopic,readyresponse);
 }
 
 function filterRequests(payload){
@@ -246,7 +248,8 @@ function getDataNew (callback) {
 		}
 		if (i == 100){
 			eventEmitter.emit('stop');
-		} 		
+		}
+		i++; 		
 	},rate_transmit);
 	//});
 }
@@ -273,7 +276,6 @@ function heapCheck () {
 
 livemodules.push({"node":mynodeid,"name":"emitter"});
 getPreliminaryData();
-mqttmod.send(broker,pipelinetopic,readyresponse);
 
 process.on('SIGTERM', function onSigterm () {
 	//l.info('Got SIGTERM');
