@@ -50,8 +50,9 @@ var stopHandler = function () {
 	console.log("Stoping interval");
 	clearInterval(retrieveData);
 	//console.log(db);
-	db = dbclass.closeDB();
+	dbclass.closeDB();
 	var checkDb = setInterval(function() {
+		console.log('Checking the value of db: '+db);
 		if (db) {
 			if (db.close == 'true') {
 				db = dbclass.connectDB(sqlite3,dbfile);
