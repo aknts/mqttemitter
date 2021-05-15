@@ -47,7 +47,9 @@ var startHandler = function () {
 }
 
 var stopHandler = function () {
-	getDataNew(sendData);
+	console.log("Stoping interval")
+	clearInterval(retrieveData);
+	eventEmitter.emit('start');
 }
 
 // Emitters
@@ -143,8 +145,8 @@ function filterRequests(payload){
 			break;
 			case 'execute':
 				if (init == 0 && halt == 0) {
-					getDataNew(sendData);
-
+					//getDataNew(sendData);
+					eventEmitter.emit('start');
 					init = 1;
 					//l.info('Starting application');
 				} else if (init == 1 && halt == 2) {
@@ -209,9 +211,11 @@ function getData () {
 
 function getDataNew (callback) {	
 	var queryinprogress = 0;
+	var i = 0;
 	//var client  = mqtt.connect(broker);
 	//client.on('connect', function () {
-	var retrieveData = setInterval(function(){
+	//var retrieveData = setInterval(function(){
+	retrieveData = setInterval(function(){
 		heapCheck();
 		if (halt == 0) {
 			if (queryinprogress == 0) {
@@ -239,6 +243,9 @@ function getDataNew (callback) {
 			} else {
 				//l.info('Last query hasn\'t finished, looping through');
 			}
+		}
+		if (i == 100){
+			eventEmitter.emit('stop');
 		} 		
 	},rate_transmit);
 	//});
