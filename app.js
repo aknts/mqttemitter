@@ -249,7 +249,8 @@ function getDataNew (callback) {
 					from = to;
 					queryinprogress = 0;
 				});
-				preparedQuery = null;
+				preparedQuery.finalize();
+				//preparedQuery = null;
 			} else {
 				//l.info('Last query hasn\'t finished, looping through');
 			}
