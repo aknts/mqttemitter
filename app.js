@@ -206,9 +206,11 @@ function getDataNew (callback) {
 						l.error(err.message);
 					}
 					if (array.length > 0) {
-						l.info('Found '+array.length+' results.');
+						var alength = array.length;
+						l.info('Found '+alength+' results.');
 						callback(array);
 						array = null;
+						alength = null;
 					} else {
 						l.info('No results between '+from+' and '+to+'.');
 					}
@@ -225,9 +227,11 @@ function getDataNew (callback) {
 }
 
 function sendData (results) {
-	l.info('Sending data, array of '+JSON.stringify(results.length)+' results.');
+	var rlength = results.length;
+	l.info('Sending data, array of '+rlength+' results.');
 	mqttmod.send(broker,nextnodedatatopic,JSON.stringify(results));
 	results = null;
+	rlength = null;
 }
 
 function heapCheck () {
