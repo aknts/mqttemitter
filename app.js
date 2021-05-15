@@ -49,17 +49,15 @@ var startHandler = function () {
 var stopHandler = function () {
 	console.log("Stoping interval");
 	clearInterval(retrieveData);
-	console.log(db);
-	db = dbclass.closeDB();
-	console.log(db);
-	db = null;
-	/*db = dbclass.connectDB(sqlite3,dbfile);
+	//console.log(db);
+	dbclass.closeDB();
+	db = dbclass.connectDB(sqlite3,dbfile);
 	var checkDb = setInterval(function() {
-		if (db) {
+		if (db.open == 'true') {
 			eventEmitter.emit('start');
 			clearInterval(checkDb);
 		}
-	},500);*/
+	},500);
 }
 
 // Emitters
