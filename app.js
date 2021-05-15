@@ -52,7 +52,7 @@ var stopHandler = function () {
 	//console.log(db);
 	db = dbclass.closeDB();
 	var checkDb = setInterval(function() {
-		if (db.clsoe == 'true') {
+		if (db.close == 'true') {
 			db = dbclass.connectDB(sqlite3,dbfile);
 		}
 		if (db.open == 'true') {
