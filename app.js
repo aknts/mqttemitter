@@ -27,7 +27,7 @@ const l = require('mqttlogger')(broker, logtopic, mqttmod, logmode);
 var readyresponse = '{"node":"'+mynodeid+'","name":"emitter","request":"ready"}';
 var cleanheapresponse = '{"node":"'+mynodeid+'","name":"emitter","request":"cleanheap"}';
 var terminatingresponse = '{"node":"'+mynodeid+'","name":"emitter","request":"terminating"}';
-l.info("Connecting to database "+dbfile);
+//l.info("Connecting to database "+dbfile);
 var db = dbclass.connectDB(sqlite3,dbfile);
 var minTimestamp;
 var from;
@@ -45,7 +45,7 @@ function getPreliminaryData () {
 			l.error(err.message);
 		}
 		minTimestamp = row.minTimestamp;
-		l.info('minTimestamp: '+minTimestamp);
+		//l.info('minTimestamp: '+minTimestamp);
 		from = minTimestamp;
 		startReceiving();
 	});
@@ -53,11 +53,11 @@ function getPreliminaryData () {
 
 function startReceiving () {
 	// Start recieving control MQTT messages
-	l.info('Started receiving control messages on '+controltopic);
+	////l.info('Started receiving control messages on '+controltopic);
 	mqttmod.receive(broker,controltopic,filterRequests);
 	
 	// Start recieving control MQTT messages
-	l.info('Started receiving control messages on '+pipelinetopic);
+	//l.info('Started receiving control messages on '+pipelinetopic);
 	mqttmod.receive(broker,pipelinetopic,filterRequests);
 }
 
@@ -94,30 +94,30 @@ function filterRequests(payload){
 							livemodules.push({"node":requestingNode,"name":requestingNodeName});
 							mqttmod.send(broker,requestingNode+'/control',readyresponse);
 						}
-						l.info('Node '+requestingNode+' reported that is ready');
-						l.info('Informing the new nodes that local node is ready');
+						//l.info('Node '+requestingNode+' reported that is ready');
+						//l.info('Informing the new nodes that local node is ready');
 						console.log(livemodules);
 					} 
 					if (alpha > -1 && beta == 1) {
-						l.info('A '+requestingNodeName+' node already exists');
+						//l.info('A '+requestingNodeName+' node already exists');
 					}
 					if (alpha == -1) {
-						l.info(requestingNodeName+' node is not valid');
+						//l.info(requestingNodeName+' node is not valid');
 					}
 				}
 				if (livemodules.length == appmodules.length) {
 					if (init == 0 && halt == 1) {
 						halt = 0;
-						l.info('All modules ready');
+						//l.info('All modules ready');
 					}
 					if (init == 1 && halt == 1){
 						halt = 2;
-						l.info('All modules ready');
+						//l.info('All modules ready');
 					}
 					if (requestingNodeName == 'trilaterator' && init == 1 && halt == 0) {
 						for(var i = 0; i < livemodules.length; i++){
 								if (livemodules[i].name == requestingNodeName && livemodules[i].node == requestingNode && livemodules[i].pid != data.pid) {
-									l.info('Sending readyresponse to a new trilaterator');
+									//l.info('Sending readyresponse to a new trilaterator');
 									mqttmod.send(broker,requestingNode+'/'+data.pid+'/control',readyresponse);
 								}	
 						}
@@ -128,12 +128,12 @@ function filterRequests(payload){
 				if (init == 0 && halt == 0) {
 					getDataNew(sendData);
 					init = 1;
-					l.info('Starting application');
+					//l.info('Starting application');
 				} else if (init == 1 && halt == 2) {
 					halt = 0;
-					l.info('Restarting application');
+					//l.info('Restarting application');
 				} else {
-					l.info('Not all modules are loaded');
+					//l.info('Not all modules are loaded');
 				}
 			break;
 			case 'terminating':
@@ -153,12 +153,12 @@ function filterRequests(payload){
 					}
 				}
 				if (livemodules.length < appmodules.length) {
-					l.info('Node '+requestingNode+' reported that is terminating, halt application.');
+					//l.info('Node '+requestingNode+' reported that is terminating, halt application.');
 					halt = 1;
 				}
 			break;
 			default:
-				l.info('Didn\'t receive a valid request');
+				//l.info('Didn\'t receive a valid request');
 		}
 	}
 }
@@ -169,18 +169,18 @@ function getData () {
 		var retrieveData = setInterval(function(){
 			if (halt == 0) {
 				to = (+from + +rate_sampling);
-				l.info('Find data between '+from+' and '+to+'.');
+				//l.info('Find data between '+from+' and '+to+'.');
 				var preparedQuery = db.prepare("select RPi as did,TimestampSecs as timestamp,MACAddress as uid,Signal as RSSI from Scans where TimestampSecs >= ? and TimestampSecs < ?");
 				preparedQuery.all(from,to,(err, array) => {
-					l.info('killmeafter: '+killmeafter);
+					//l.info('killmeafter: '+killmeafter);
 					if (err) {
 						l.error(err.message);
 					}
 					if (array.length > 0) {
-						l.info('Found '+array.length+' results.');
+						//l.info('Found '+array.length+' results.');
 						sendData(array);
 					} else {
-						l.info('No results between '+from+' and '+to+'.');
+						//l.info('No results between '+from+' and '+to+'.');
 					}
 					from = to;
 				});
@@ -199,7 +199,7 @@ function getDataNew (callback) {
 			if (queryinprogress == 0) {
 				queryinprogress = 1;
 				to = (+from + +rate_sampling);
-				l.info('Find data between '+from+' and '+to+'.');
+				//l.info('Find data between '+from+' and '+to+'.');
 				var preparedQuery = db.prepare("select RPi as did,TimestampSecs as timestamp,MACAddress as uid,Signal as RSSI from Scans where TimestampSecs >= ? and TimestampSecs < ?");
 				preparedQuery.all(from,to,(err, array) => {
 					if (err) {
@@ -207,19 +207,19 @@ function getDataNew (callback) {
 					}
 					if (array.length > 0) {
 						var alength = array.length;
-						l.info('Found '+alength+' results.');
+						//l.info('Found '+alength+' results.');
 						callback(array);
 						array = null;
 						alength = null;
 					} else {
-						l.info('No results between '+from+' and '+to+'.');
+						//l.info('No results between '+from+' and '+to+'.');
 					}
 					from = to;
 					queryinprogress = 0;
 				});
 				preparedQuery = null;
 			} else {
-				l.info('Last query hasn\'t finished, looping through');
+				//l.info('Last query hasn\'t finished, looping through');
 			}
 		} 		
 	},rate_transmit);
@@ -228,7 +228,7 @@ function getDataNew (callback) {
 
 function sendData (results) {
 	var rlength = results.length;
-	l.info('Sending data, array of '+rlength+' results.');
+	//l.info('Sending data, array of '+rlength+' results.');
 	mqttmod.send(broker,nextnodedatatopic,JSON.stringify(results));
 	results = null;
 	rlength = null;
@@ -251,6 +251,6 @@ getPreliminaryData();
 mqttmod.send(broker,pipelinetopic,readyresponse);
 
 process.on('SIGTERM', function onSigterm () {
-	l.info('Got SIGTERM');
+	//l.info('Got SIGTERM');
 	mqttmod.send(broker,pipelinetopic,terminatingresponse);
 });
