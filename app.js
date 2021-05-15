@@ -52,17 +52,11 @@ var stopHandler = function () {
 	//console.log(db);
 	dbclass.closeDB();
 	var checkDb = setInterval(function() {
-		console.log('Checking the value of db');
-		console.log(db);
-		if (db) {
-			if (db.close == 'true') {
 				db = dbclass.connectDB(sqlite3,dbfile);
-			}
 			if (db.open == 'true') {
 				eventEmitter.emit('start');
 				clearInterval(checkDb);
 			}
-		}
 	},500);
 }
 

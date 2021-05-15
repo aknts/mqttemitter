@@ -12,11 +12,8 @@ module.exports = {
 		db.close((err) => {
 			if (err) {
 				return console.log(err.message);
-			} else {
-				console.log('Connection to database closed.');
-				var closeObj = {"close":"true"};
-				return closeObj;
 			}
+			console.log('Connection to database closed.');
 		});
 	}
 };
