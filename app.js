@@ -52,7 +52,8 @@ var stopHandler = function () {
 	//console.log(db);
 	dbclass.closeDB();
 	var checkDb = setInterval(function() {
-		console.log('Checking the value of db: '+db);
+		console.log('Checking the value of db');
+		console.log(db);
 		if (db) {
 			if (db.close == 'true') {
 				db = dbclass.connectDB(sqlite3,dbfile);
@@ -260,7 +261,7 @@ function getDataNew (callback) {
 				//l.info('Last query hasn\'t finished, looping through');
 			}
 		}
-		if (i == 100){
+		if (i == 1){
 			eventEmitter.emit('stop');
 		}
 		i++; 		
