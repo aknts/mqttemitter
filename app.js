@@ -54,6 +54,7 @@ var stopHandler = function () {
 	clearInterval(retrieveData);
 	//console.log(db);
 	//dbclass.closeDB();
+	db.close();
 	db = null;
 
 	setTimeout(function(){
