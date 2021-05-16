@@ -42,7 +42,7 @@ var mqtt = require('mqtt');
 
 // Events
 // Handlers
-/*var startHandler = function () {
+var startHandler = function () {
 	db = dbclass.connectDB(sqlite3,dbfile);
 	setTimeout(function(){
 		getDataNew(sendData);
@@ -54,7 +54,8 @@ var stopHandler = function () {
 	clearInterval(retrieveData);
 	//console.log(db);
 	//dbclass.closeDB();
-	db.close();
+	db = null;
+
 	setTimeout(function(){
 		eventEmitter.emit('start');
 	},1000);
@@ -63,7 +64,7 @@ var stopHandler = function () {
 // Emitters
 eventEmitter.on('start', startHandler);
 eventEmitter.on('stop', stopHandler);
-*/
+
 
 // Functions
 function getPreliminaryData () {
@@ -155,8 +156,8 @@ function filterRequests(payload){
 			break;
 			case 'execute':
 				if (init == 0 && halt == 0) {
-					getDataNew(sendData);
-					//eventEmitter.emit('start');
+					//getDataNew(sendData);
+					eventEmitter.emit('start');
 					init = 1;
 					//l.info('Starting application');
 				} else if (init == 1 && halt == 2) {
@@ -221,7 +222,7 @@ function getData () {
 
 function getDataNew (callback) {	
 	var queryinprogress = 0;
-	//var i = 0;
+	var i = 0;
 	//var client  = mqtt.connect(broker);
 	//client.on('connect', function () {
 	//var retrieveData = setInterval(function(){
@@ -255,10 +256,10 @@ function getDataNew (callback) {
 				//l.info('Last query hasn\'t finished, looping through');
 			}
 		}
-		/*if (i == 10){
+		if (i == 10){
 			eventEmitter.emit('stop');
 		}
-		i++;*/ 		
+		i++; 		
 	},rate_transmit);
 	//});
 }
