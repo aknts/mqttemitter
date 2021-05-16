@@ -1,6 +1,6 @@
 module.exports = {
 	connectDB: function (sqlite3,sqliteDB) {
-		db = new sqlite3.cached.Database(sqliteDB, (err) => {
+		db = new sqlite3.Database(sqliteDB, (err) => {
 			if (err) {
 				console.log(err.message);
 			}
