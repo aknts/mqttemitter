@@ -43,7 +43,10 @@ var mqtt = require('mqtt');
 // Events
 // Handlers
 var startHandler = function () {
-	getDataNew(sendData);
+	db = dbclass.connectDB(sqlite3,dbfile);
+	setTimeout(function(){
+		getDataNew(sendData);
+	},1000);
 }
 
 var stopHandler = function () {
@@ -51,8 +54,9 @@ var stopHandler = function () {
 	clearInterval(retrieveData);
 	//console.log(db);
 	dbclass.closeDB();
-	db = dbclass.connectDB(sqlite3,dbfile);
-	eventEmitter.emit('start');
+	setTimeout(function(){
+		eventEmitter.emit('start');
+	},1000);
 }
 
 // Emitters
