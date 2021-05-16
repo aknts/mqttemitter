@@ -51,13 +51,8 @@ var stopHandler = function () {
 	clearInterval(retrieveData);
 	//console.log(db);
 	dbclass.closeDB();
-	var checkDb = setInterval(function() {
-				db = dbclass.connectDB(sqlite3,dbfile);
-			if (db.open == 'true') {
-				eventEmitter.emit('start');
-				clearInterval(checkDb);
-			}
-	},500);
+	db = dbclass.connectDB(sqlite3,dbfile);
+	eventEmitter.emit('start');
 }
 
 // Emitters
@@ -255,7 +250,7 @@ function getDataNew (callback) {
 				//l.info('Last query hasn\'t finished, looping through');
 			}
 		}
-		if (i == 1){
+		if (i == 10){
 			eventEmitter.emit('stop');
 		}
 		i++; 		
