@@ -221,7 +221,7 @@ function getDataNew (callback) {
 	//var client  = mqtt.connect(broker);
 	//client.on('connect', function () {
 	//var retrieveData = setInterval(function(){
-	retrieveData = setInterval(function(){
+	var retrieveData = setInterval(function(){
 		heapCheck();
 		if (halt == 0) {
 			if (queryinprogress == 0) {
