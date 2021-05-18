@@ -217,11 +217,11 @@ function getData () {
 
 function getDataNew (callback) {	
 	var queryinprogress = 0;
-	//var i = 0;
+	let i = 0;
 	//var client  = mqtt.connect(broker);
 	//client.on('connect', function () {
 	//var retrieveData = setInterval(function(){
-	var retrieveData = setInterval(function(){
+	var retrieveData = setTimeout(function run(){
 		heapCheck();
 		if (halt == 0) {
 			if (queryinprogress == 0) {
@@ -253,8 +253,9 @@ function getDataNew (callback) {
 		}
 		/*if (i == 10){
 			eventEmitter.emit('stop');
-		}
-		i++;*/ 		
+		}*/
+		setTimeout(run,rate_transmit);
+		i++; 		
 	},rate_transmit);
 	//});
 }
