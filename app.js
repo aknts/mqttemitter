@@ -16,21 +16,30 @@ var dbfile = config.appsettings.dbfile;
 var rate_transmit = config.appsettings.rate_transmit;
 var rate_sampling = config.appsettings.rate_sampling;
 var logmode = config.appsettings.logmode;
+var mariadb = config.appsettings.mariadb;
 
 // Modules
-const sqlite3 = require('sqlite3').verbose();
+//const sqlite3 = require('sqlite3').verbose();
 const mqttmod = require('mqttmod');
-const dbclass = require('./sqlite');
-var events = require('events');
-var eventEmitter = new events.EventEmitter();
+//const dbclass = require('./sqlite');
+//var events = require('events');
+//var eventEmitter = new events.EventEmitter();
 const l = require('mqttlogger')(broker, logtopic, mqttmod, logmode);
+var mysql = require('mysql');
+var pool  = mysql.createPool({
+  connectionLimit : 10,
+  host            : mariadb.host,
+  port			  : mariadb.port,
+  user            : mariadb.user,
+  password        : mariadb.password
+});
 
 // Variables
 var readyresponse = '{"node":"'+mynodeid+'","name":"emitter","request":"ready"}';
 var cleanheapresponse = '{"node":"'+mynodeid+'","name":"emitter","request":"cleanheap"}';
 var terminatingresponse = '{"node":"'+mynodeid+'","name":"emitter","request":"terminating"}';
 //l.info("Connecting to database "+dbfile);
-var db = dbclass.connectDB(sqlite3,dbfile);
+//var db = dbclass.connectDB(sqlite3,dbfile);
 var minTimestamp;
 var from;
 var to;
@@ -42,6 +51,7 @@ var mqtt = require('mqtt');
 
 // Events
 // Handlers
+/*
 var startHandler = function () {
 	console.log("Connecting to db");
 	db = dbclass.connectDB(sqlite3,dbfile);
@@ -59,7 +69,7 @@ var stopHandler = function () {
 // Emitters
 eventEmitter.on('start', startHandler);
 eventEmitter.on('stop', stopHandler);
-
+*/
 
 // Functions
 function getPreliminaryData () {
@@ -188,7 +198,7 @@ function filterRequests(payload){
 		}
 	}
 }
-
+/*
 function getData () {	
 	db.serialize(() => {
 		db.run("begin transaction");
@@ -214,7 +224,7 @@ function getData () {
 		},rate_transmit);
 	});
 }
-
+*/
 function getDataNew (callback) {	
 	var queryinprogress = 0;
 	let i = 0;
@@ -228,6 +238,7 @@ function getDataNew (callback) {
 				queryinprogress = 1;
 				to = (+from + +rate_sampling);
 				//l.info('Find data between '+from+' and '+to+'.');
+				/*
 				var preparedQuery = db.prepare("select RPi as did,TimestampSecs as timestamp,MACAddress as uid,Signal as RSSI from Scans where TimestampSecs >= ? and TimestampSecs < ?");
 				preparedQuery.all(from,to,(err, array) => {
 					if (err) {
@@ -247,6 +258,23 @@ function getDataNew (callback) {
 				});
 				preparedQuery.finalize();
 				preparedQuery = null;
+				*/
+				//SELECT 'RPi' AS "did",'TimestampSecs' AS "timestamp",'MACAddress' AS "uid",'Signal' AS "RSSI" from DASFEST2018.Scans WHERE TimestampSecs >= 1531990340 AND TimestampSecs < 1531990345
+				pool.query('SELECT `RPi` AS "did",`TimestampSecs` AS `timestamp`,`MACAddress` AS "uid",`Signal` AS "RSSI" from '+mariadb.db+'.Scans WHERE TimestampSecs >= '+from+' AND TimestampSecs < '+to,  (err,rows) => {
+					if (err) {
+						l.error(err.message);
+					}
+					if (rows.length > 0) {
+						//var alength = array.length;
+						//l.info('Found '+alength+' results.');
+						callback(array);
+						rows = null;
+					} else {
+						//l.info('No results between '+from+' and '+to+'.');
+					}
+					from = to;
+					queryinprogress = 0;
+				});
 			} else {
 				//l.info('Last query hasn\'t finished, looping through');
 			}
@@ -261,7 +289,7 @@ function getDataNew (callback) {
 }
 
 function sendData (results) {
-	var rlength = results.length;
+	//var rlength = results.length;
 	//l.info('Sending data, array of '+rlength+' results.');
 	mqttmod.send(broker,nextnodedatatopic,JSON.stringify(results));
 	results = null;
