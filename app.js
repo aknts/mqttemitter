@@ -72,12 +72,26 @@ eventEmitter.on('stop', stopHandler);
 */
 
 // Functions
+/*
 function getPreliminaryData () {
 	db.get('select min(TimestampSecs) as minTimestamp from Scans', function(err, row){
 		if (err) {
 			l.error(err.message);
 		}
 		minTimestamp = row.minTimestamp;
+		//l.info('minTimestamp: '+minTimestamp);
+		from = minTimestamp;
+		startReceiving();
+	});
+}
+*/
+function getPreliminaryData () {
+	pool.query('select min(TimestampSecs) as minTimestamp from '+mariadb.db+'.Scans',  (err,rows) => {
+		if (err) {
+			l.error(err.message);
+		}
+		console.log(rows);
+		minTimestamp = rows.minTimestamp;
 		//l.info('minTimestamp: '+minTimestamp);
 		from = minTimestamp;
 		startReceiving();
