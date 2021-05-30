@@ -19,6 +19,7 @@
   "dependencies": {
     "mqttlogger": "aknts/mqttlogger",
     "mqttmod": "aknts/mqttmod",
-    "sqlite3": "^ 4.0.0"
+    "sqlite3": "^ 4.0.0",
+    "mysql": "^2.16.0"
   }
 }
