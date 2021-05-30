@@ -280,7 +280,7 @@ function getDataNew (callback) {
 					if (rows.length > 0) {
 						//var alength = array.length;
 						//l.info('Found '+alength+' results.');
-						callback(array);
+						callback(rows);
 						rows = null;
 					} else {
 						//l.info('No results between '+from+' and '+to+'.');
