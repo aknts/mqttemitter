@@ -90,7 +90,7 @@ function getPreliminaryData () {
 		if (err) {
 			l.error(err.message);
 		}
-		console.log(rows);
+		console.log(rows.minTimestamp);
 		minTimestamp = rows.minTimestamp;
 		//l.info('minTimestamp: '+minTimestamp);
 		from = minTimestamp;
