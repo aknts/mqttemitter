@@ -8,22 +8,16 @@ var broker = config.globalsettings.broker;
 var mynodeid = config.mynodeid
 var logtopic = mynodeid+'/log';
 var controltopic = mynodeid+'/control';
-var datatopic = mynodeid+'/data';
 var nextnode = config.nextnode;
 var nextnodedatatopic = nextnode+'/data';
 var pipelinetopic = config.nameid+'/broadcast';
-var dbfile = config.appsettings.dbfile;
 var rate_transmit = config.appsettings.rate_transmit;
 var rate_sampling = config.appsettings.rate_sampling;
 var logmode = config.appsettings.logmode;
 var mariadb = config.appsettings.mariadb;
 
 // Modules
-//const sqlite3 = require('sqlite3').verbose();
 const mqttmod = require('mqttmod');
-//const dbclass = require('./sqlite');
-//var events = require('events');
-//var eventEmitter = new events.EventEmitter();
 const l = require('mqttlogger')(broker, logtopic, mqttmod, logmode);
 var mysql = require('mysql');
 var pool  = mysql.createPool({
@@ -39,7 +33,7 @@ var readyresponse = '{"node":"'+mynodeid+'","name":"emitter","request":"ready"}'
 var cleanheapresponse = '{"node":"'+mynodeid+'","name":"emitter","request":"cleanheap"}';
 var terminatingresponse = '{"node":"'+mynodeid+'","name":"emitter","request":"terminating"}';
 //l.info("Connecting to database "+dbfile);
-//var db = dbclass.connectDB(sqlite3,dbfile);
+
 var minTimestamp;
 var from;
 var to;
@@ -47,44 +41,7 @@ var init = 0;
 var halt = 1;
 var appmodules = ['emitter','filter','loadbalancer','trilaterator','aggregator'];
 var livemodules = [];
-var mqtt = require('mqtt');
 
-// Events
-// Handlers
-/*
-var startHandler = function () {
-	console.log("Connecting to db");
-	db = dbclass.connectDB(sqlite3,dbfile);
-	getDataNew(sendData);
-}
-
-var stopHandler = function () {
-	console.log("Stoping interval");
-	clearInterval(retrieveData);
-	db.close();
-	db = null;
-	eventEmitter.emit('start');
-}
-
-// Emitters
-eventEmitter.on('start', startHandler);
-eventEmitter.on('stop', stopHandler);
-*/
-
-// Functions
-/*
-function getPreliminaryData () {
-	db.get('select min(TimestampSecs) as minTimestamp from Scans', function(err, row){
-		if (err) {
-			l.error(err.message);
-		}
-		minTimestamp = row.minTimestamp;
-		//l.info('minTimestamp: '+minTimestamp);
-		from = minTimestamp;
-		startReceiving();
-	});
-}
-*/
 function getPreliminaryData () {
 	pool.query('select min(TimestampSecs) as minTimestamp from '+mariadb.db+'.Scans',  (err,rows) => {
 		if (err) {
@@ -175,7 +132,6 @@ function filterRequests(payload){
 			case 'execute':
 				if (init == 0 && halt == 0) {
 					getDataNew(sendData);
-					//eventEmitter.emit('start');
 					init = 1;
 					//l.info('Starting application');
 				} else if (init == 1 && halt == 2) {
@@ -211,68 +167,16 @@ function filterRequests(payload){
 		}
 	}
 }
-/*
-function getData () {	
-	db.serialize(() => {
-		db.run("begin transaction");
-		var retrieveData = setInterval(function(){
-			if (halt == 0) {
-				to = (+from + +rate_sampling);
-				//l.info('Find data between '+from+' and '+to+'.');
-				var preparedQuery = db.prepare("select RPi as did,TimestampSecs as timestamp,MACAddress as uid,Signal as RSSI from Scans where TimestampSecs >= ? and TimestampSecs < ?");
-				preparedQuery.all(from,to,(err, array) => {
-					//l.info('killmeafter: '+killmeafter);
-					if (err) {
-						l.error(err.message);
-					}
-					if (array.length > 0) {
-						//l.info('Found '+array.length+' results.');
-						sendData(array);
-					} else {
-						//l.info('No results between '+from+' and '+to+'.');
-					}
-					from = to;
-				});
-			}
-		},rate_transmit);
-	});
-}
-*/
+
 function getDataNew (callback) {	
 	var queryinprogress = 0;
 	let i = 0;
-	//var client  = mqtt.connect(broker);
-	//client.on('connect', function () {
-	//var retrieveData = setInterval(function(){
 	var retrieveData = setTimeout(function run(){
 		heapCheck();
 		if (halt == 0) {
 			if (queryinprogress == 0) {
 				queryinprogress = 1;
 				to = (+from + +rate_sampling);
-				//l.info('Find data between '+from+' and '+to+'.');
-				/*
-				var preparedQuery = db.prepare("select RPi as did,TimestampSecs as timestamp,MACAddress as uid,Signal as RSSI from Scans where TimestampSecs >= ? and TimestampSecs < ?");
-				preparedQuery.all(from,to,(err, array) => {
-					if (err) {
-						l.error(err.message);
-					}
-					if (array.length > 0) {
-						var alength = array.length;
-						//l.info('Found '+alength+' results.');
-						callback(array);
-						array = null;
-						alength = null;
-					} else {
-						//l.info('No results between '+from+' and '+to+'.');
-					}
-					from = to;
-					queryinprogress = 0;
-				});
-				preparedQuery.finalize();
-				preparedQuery = null;
-				*/
-				//SELECT 'RPi' AS "did",'TimestampSecs' AS "timestamp",'MACAddress' AS "uid",'Signal' AS "RSSI" from DASFEST2018.Scans WHERE TimestampSecs >= 1531990340 AND TimestampSecs < 1531990345
 				pool.query('SELECT `RPi` AS "did",`TimestampSecs` AS `timestamp`,`MACAddress` AS "uid",`Signal` AS "RSSI" from '+mariadb.db+'.Scans WHERE TimestampSecs >= '+from+' AND TimestampSecs < '+to,  (err,rows) => {
 					if (err) {
 						l.error(err.message);
@@ -292,13 +196,9 @@ function getDataNew (callback) {
 				//l.info('Last query hasn\'t finished, looping through');
 			}
 		}
-		/*if (i == 10){
-			eventEmitter.emit('stop');
-		}*/
 		setTimeout(run,rate_transmit);
 		i++; 		
 	},rate_transmit);
-	//});
 }
 
 function sendData (results) {
