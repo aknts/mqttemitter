@@ -202,8 +202,8 @@ function getDataNew (callback) {
 }
 
 function sendData (results) {
-	//var rlength = results.length;
-	//l.info('Sending data, array of '+rlength+' results.');
+	var rlength = results.length;
+	l.info('Sending data, array of '+rlength+' results at: '+Date.now());
 	mqttmod.send(broker,nextnodedatatopic,JSON.stringify(results));
 	results = null;
 	rlength = null;
